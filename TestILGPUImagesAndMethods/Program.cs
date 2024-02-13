@@ -12,7 +12,7 @@ namespace TestILGPUImagesAndMethods
     {
         static void Main(string[] args)
         {
-            //prova test a
+            //CPU test
             SampleStruct sp = new SampleStruct(0.5, 1000);
             double[] x = new double[100];
             for (int i = 0; i < x.Length; i++)
@@ -27,7 +27,7 @@ namespace TestILGPUImagesAndMethods
 
 
 
-
+            //GPU test
             var ctx = Context.CreateDefault();
             var acc = ctx.GetPreferredDevice(false).CreateAccelerator(ctx);
             SampleStructILGPU spGPU = new SampleStructILGPU(sp,acc);
