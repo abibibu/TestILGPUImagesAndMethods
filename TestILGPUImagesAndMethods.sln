@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestILGPUImagesAndMethods", "TestILGPUImagesAndMethods\TestILGPUImagesAndMethods.csproj", "{46C4DD9A-B00F-44E4-AD5E-984758FBEF11}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{46C4DD9A-B00F-44E4-AD5E-984758FBEF11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46C4DD9A-B00F-44E4-AD5E-984758FBEF11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46C4DD9A-B00F-44E4-AD5E-984758FBEF11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46C4DD9A-B00F-44E4-AD5E-984758FBEF11}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BFD2B980-C2AD-41E6-8EA4-08B408C17E90}
+	EndGlobalSection
+EndGlobal
