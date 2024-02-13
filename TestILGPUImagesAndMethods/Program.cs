@@ -12,6 +12,7 @@ namespace TestILGPUImagesAndMethods
     {
         static void Main(string[] args)
         {
+            //prova test a
             SampleStruct sp = new SampleStruct(0.5, 1000);
             double[] x = new double[100];
             for (int i = 0; i < x.Length; i++)
