@@ -53,8 +53,11 @@ namespace TestILGPUImagesAndMethods
             imageTransformedArr = new byte[imageTransformed.LengthInBytes];
             accelerator.Synchronize();
             //I know this is super ugly but is only for understanding purpose...
-            if(useStruct)
+            if (useStruct)
+            {
                 findKeyPointsILGPU = new KeyPointsILGPU_struct(imSize, accelerator);
+
+            }
             else
                 findKeyPointsILGPUNoStruct = new KeyPointsILGPU_noStruct(imSize, accelerator);
         }
@@ -389,14 +392,14 @@ namespace TestILGPUImagesAndMethods
 
             keyPointsCalculator = new KeyPointsCalculator(size, acc, nBin, nRoiPerWidth, margin);
             acc.Synchronize();
-
-            KernelValidateRoi = acc.LoadAutoGroupedStreamKernel<Index1D, ArrayView2D<byte, Stride2D.DenseY>, ArrayView2D<byte, Stride2D.DenseY>, KeyPointsCalculator>(KeyPointsCalculator.KernelValidateRoi);
-            acc.Synchronize();
-            KernelCalcMutualInformation = acc.LoadAutoGroupedStreamKernel<Index2D, int, ArrayView2D<byte, Stride2D.DenseY>, ArrayView2D<byte, Stride2D.DenseY>, KeyPointsCalculator>(KeyPointsCalculator.KernelCalcMI);
-            acc.Synchronize();
-            KernelFindPointOfMaxMI = acc.LoadAutoGroupedStreamKernel<Index1D, KeyPointsCalculator>(KeyPointsCalculator.KernelFindPointOfMaxMI);
-            acc.Synchronize();
             accelerator = acc;
+            KernelValidateRoi = accelerator.LoadAutoGroupedStreamKernel<Index1D, ArrayView2D<byte, Stride2D.DenseY>, ArrayView2D<byte, Stride2D.DenseY>, KeyPointsCalculator>(KeyPointsCalculator.KernelValidateRoi);
+            accelerator.Synchronize();
+            KernelCalcMutualInformation = accelerator.LoadAutoGroupedStreamKernel<Index2D, int, ArrayView2D<byte, Stride2D.DenseY>, ArrayView2D<byte, Stride2D.DenseY>, KeyPointsCalculator>(KeyPointsCalculator.KernelCalcMI);
+            accelerator.Synchronize();
+            KernelFindPointOfMaxMI = accelerator.LoadAutoGroupedStreamKernel<Index1D, KeyPointsCalculator>(KeyPointsCalculator.KernelFindPointOfMaxMI);
+            accelerator.Synchronize();
+
         }
         public void LoadImages(Mat fixedImage, Mat movingImage, Accelerator acc)
         {

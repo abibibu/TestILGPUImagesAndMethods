@@ -10,6 +10,8 @@ using Emgu.CV;
 using System.Diagnostics;
 using Emgu.CV.Structure;
 using System.Windows.Forms;
+using ILGPU.Runtime.OpenCL;
+using System.Drawing;
 
 namespace TestILGPUImagesAndMethods
 {
@@ -46,18 +48,60 @@ namespace TestILGPUImagesAndMethods
 
             //show image not registered
             Task t = Task.Run(() => { ShowImage((movImg - fixImg).ToImage<Gray, float>()); });
-            
 
+            Stopwatch st = new Stopwatch();
+            Accelerator acc = MutualInformationSinglePassILGPU.MakeAccellerator();
 
+            //test only load kernels
+            st.Reset(); st.Start();
 
+            var KernelValidateRoi = acc.LoadAutoGroupedStreamKernel<Index1D,
+                ArrayView2D<byte, Stride2D.DenseY>,
+                ArrayView2D<byte, Stride2D.DenseY>,
+                ArrayView1D<PointF, Stride1D.Dense>,
+                ArrayView1D<float, Stride1D.Dense>,
+                ArrayView1D<float, Stride1D.Dense>,
+                ArrayView2D<short, Stride2D.DenseX>,
+                ArrayView2D<short, Stride2D.DenseX>,
+                ArrayView2D<short, Stride2D.DenseX>,
+                Size>(KeyPointsILGPU_noStruct.KeyPointsCalculator.KernelValidateRoi);
+            acc.Synchronize();
+            st.Stop(); Console.WriteLine("only load KernelValidateRoi: " + st.ElapsedMilliseconds); st.Reset(); st.Start();
+
+            var KernelCalcMutualInformation = acc.LoadAutoGroupedStreamKernel<Index2D,
+                int,
+                ArrayView2D<byte, Stride2D.DenseY>,
+                ArrayView2D<byte, Stride2D.DenseY>,
+                ArrayView1D<PointF, Stride1D.Dense>,
+                ArrayView1D<float, Stride1D.Dense>,
+                ArrayView2D<short, Stride2D.DenseX>,
+                ArrayView2D<short, Stride2D.DenseX>,
+                ArrayView2D<float, Stride2D.DenseY>,
+                float,
+                int,
+                int,
+                int,
+                Size>(KeyPointsILGPU_noStruct.KeyPointsCalculator.KernelCalcMI);
+            acc.Synchronize();
+            st.Stop(); Console.WriteLine("only load KernelCalcMI: " + st.ElapsedMilliseconds); st.Reset(); st.Start();
+
+            var KernelFindPointOfMaxMI = acc.LoadAutoGroupedStreamKernel<Index1D,
+                ArrayView2D<float, Stride2D.DenseY>,
+                ArrayView1D<PointF, Stride1D.Dense>,
+                ArrayView1D<PointF, Stride1D.Dense>,
+                int,
+                int,
+                float,
+                int>(KeyPointsILGPU_noStruct.KeyPointsCalculator.KernelFindPointOfMaxMI);
+            acc.Synchronize();
+            st.Stop(); Console.WriteLine("only load KernelFindPointOfMaxMI: " + st.ElapsedMilliseconds);
 
 
 
 
             //creation of the ILGPU class using STRUCT OF ARRAYS for image registration
-            Stopwatch st = new Stopwatch();
             st.Reset(); st.Start();
-            var mi = new MutualInformationSinglePassILGPU(fixImg.Size, MutualInformationSinglePassILGPU.MakeAccellerator(), true);//approx 16 seconds
+            var mi = new MutualInformationSinglePassILGPU(fixImg.Size, acc, true);//approx 16 seconds
             st.Stop(); Console.WriteLine("load registration kernel struct: " + st.ElapsedMilliseconds);
 
             //first run of registration
@@ -100,7 +144,7 @@ namespace TestILGPUImagesAndMethods
 
             //creation of the ILGPU class using without struct for image registration
             st.Reset(); st.Start();
-            var mi2 = new MutualInformationSinglePassILGPU(fixImg.Size, MutualInformationSinglePassILGPU.MakeAccellerator(), false);//approx 15 seconds
+            var mi2 = new MutualInformationSinglePassILGPU(fixImg.Size, acc, false);//approx 15 seconds
             st.Stop(); Console.WriteLine("load registration kernel NO struct: " + st.ElapsedMilliseconds);
 
             //first run of registration
@@ -123,6 +167,9 @@ namespace TestILGPUImagesAndMethods
             Task t2 = Task.Run(() => { ShowImage((movImgRegistered - fixImg).ToImage<Gray, float>()); });
 
 
+
+
+            
 
 
 
